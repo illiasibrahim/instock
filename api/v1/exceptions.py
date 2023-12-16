@@ -41,3 +41,11 @@ class MedicineUnavailableException(BaseAPIException):
         code = 5003
         message = f"{medicine} not available at your location."
         super().__init__(code=code, message=message)
+
+
+class BucketDoesNotExistException(BaseAPIException):
+
+    def __init__(self):
+        code = 5004
+        message = f"An active bucket does not exist for the rider."
+        super().__init__(code=code, message=message)
