@@ -63,3 +63,12 @@ class BucketItem(DatedModel):
 
     def __str__(self):
         return f"[{self.order_number}] - {self.order.code}"
+
+
+class Customer(DatedModel):
+    user = models.OneToOneField(
+        User, on_delete=models.PROTECT, related_name="customer")
+    userEID = models.CharField(max_length=128)
+
+    def __str__(self):
+        return f"[{self.userEID}] - {self.user.username}"

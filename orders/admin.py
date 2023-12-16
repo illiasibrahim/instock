@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from core.admin import BaseAdmin
-from orders.models import Rider, Order, OrderItem, Bucket, BucketItem
+from orders.models import Rider, Order, OrderItem, Bucket, BucketItem, Customer
 
 
 class RiderAdmin(BaseAdmin):
@@ -42,8 +42,17 @@ class BucketItemAdmin(BaseAdmin):
     readonly_fields = ("created_date", "modified_date")
 
 
+class CustomerAdmin(BaseAdmin):
+    list_display = (
+        "__str__", "user", "userEID", "created_date"
+    )
+    model = Customer
+    readonly_fields = ("created_date", "modified_date")
+
+
 admin.site.register(Rider, RiderAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderItem, OrderItemAdmin)
 admin.site.register(Bucket, BucketAdmin)
 admin.site.register(BucketItem, BucketItemAdmin)
+admin.site.register(Customer, CustomerAdmin)

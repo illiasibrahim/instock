@@ -1,5 +1,8 @@
+import json
 from datetime import datetime
 
+import requests
+from decouple import config
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.filters import SearchFilter
@@ -207,3 +210,71 @@ class MarkAsDeliveredView(APIView):
             return Response({"status": "success"})
         except ObjectDoesNotExist:
             raise BaseAPIException()
+
+
+class GetPrescribedMedications(APIBaseView):
+
+    def get_authorization_headers(self):
+        hsLoginBaseUrl = config("hsLoginBaseUrl")
+        client_id = config("client_id")
+        client_secret = config("client_secret")
+        adminMobileNo = config("adminMobileNo")
+        mpin = config("mpin")
+        hospitalCode = config("hospitalCode")
+        auth_url = (
+            f"{hsLoginBaseUrl}/oauth/token?grant_type=password"
+            f"&username={adminMobileNo}&password={mpin}&"
+            f"hospCode={hospitalCode}&client_secret={client_secret}&"
+            f"client_id={client_id}")
+        response = requests.request(url=auth_url, method='GET')
+        if response.status_code == 200:
+            response_dict = json.loads(response.text)
+            access_token = response_dict.get("access_token")
+            return {
+                "Authorization": f"Bearer {access_token}"
+            }
+        else:
+            raise BaseAPIException()
+
+    def get(self, request, *args, **kwargs):
+        headers = self.get_authorization_headers()
+        try:
+            customer = request.user.customer
+            baseUrl = config("baseUrl")
+            mobileAPIversion = config("mobileAPIversion")
+            prescribed_medicines_url = (
+                f"{baseUrl}{mobileAPIversion}/getCurrentMedicationDetails?"
+                f"patientEId={customer.userEID}")
+            response = requests.request(
+                url=prescribed_medicines_url,
+                method='GET',
+                headers=headers
+            )
+            if response.status_code == 200:
+                response_dict = json.loads(response.text)
+                medicine_details = response_dict.get("data")
+                data = []
+                for medicine_data in medicine_details:
+                    code = medicine_data["brandName"]
+                    try:
+                        medicine = Medicine.objects.get(code=code)
+                        frequency = medicine_data["frequency"]
+                        frequency = sum(int(
+                            element) for element in frequency.split('-'))
+                        days = medicine_data["days"]
+                        days = int(days[:-4])
+                        data.append(
+                            {
+                                "id": medicine.id,
+                                "name": medicine.name,
+                                "image": request.build_absolute_uri(medicine.image.url),
+                                "quantity": days * frequency
+                            }
+                        )
+                    except ObjectDoesNotExist:
+                        pass
+            else:
+                raise BaseAPIException()
+        except ObjectDoesNotExist:
+            data = []
+        return Response(data)
