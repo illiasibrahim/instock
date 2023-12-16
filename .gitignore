@@ -2,5 +2,7 @@
 db.sqlite3
 .env
 *.png
+*.jpg
 .idea
 __pycache__/
+.vscode/
