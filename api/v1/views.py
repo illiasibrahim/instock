@@ -141,7 +141,9 @@ class BucketView(APIBaseView):
                 "id": item.id,
                 "username": item.order.created_by.first_name,
                 "contact_number": item.order.contact_number,
-                "location": item.order.location
+                "location": item.order.location,
+                "code": item.order.code,
+                "address": item.order.created_by.customer.address
             } for item in bucket_items
         ]
         return data

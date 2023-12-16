@@ -70,6 +70,7 @@ class Customer(DatedModel):
     user = models.OneToOneField(
         User, on_delete=models.PROTECT, related_name="customer")
     userEID = models.CharField(max_length=128)
+    address = models.CharField(max_length=256)
 
     def __str__(self):
         return f"[{self.userEID}] - {self.user.username}"
