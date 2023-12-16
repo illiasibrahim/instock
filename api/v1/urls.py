@@ -1,6 +1,6 @@
 from django.urls import path
 
-from api.v1.views import GetToken, MedicineListAPIView, CreateOrderView, ValidateLocationView, BucketView, \
+from api.v1.views import GetToken, MedicineListAPIView, OrderView, ValidateLocationView, BucketView, \
     MarkAsDeliveredView, GetPrescribedMedications
 
 urlpatterns = [
@@ -9,7 +9,7 @@ urlpatterns = [
     path('medicines/', MedicineListAPIView.as_view(), name='medicine-list'),
     path('prescribed/medicines/', GetPrescribedMedications.as_view(), name='prescribed-medicine-list'),
     path('location/validate/', ValidateLocationView.as_view(), name='validate-location'),
-    path('orders/', CreateOrderView.as_view(), name='create-order'),
+    path('orders/', OrderView.as_view(), name='create-order'),
 
     path('buckets/', BucketView.as_view(), name='bucket-view'),
     path('<int:id>/mark-delivered/', MarkAsDeliveredView.as_view(), name='mark-delivered'),

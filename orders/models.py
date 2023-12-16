@@ -37,6 +37,7 @@ class Order(DatedModel, CreatedByModel):
 
 class OrderItem(DatedModel):
     medicine = models.ForeignKey(Medicine, on_delete=models.PROTECT)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField()
     store = models.ForeignKey(
         Store, on_delete=models.PROTECT)

@@ -4,6 +4,7 @@ from haversine import haversine, Unit
 
 from api.v1.exceptions import BaseAPIException, LocationOutOfBoundException, MedicinesRequiredException
 from inventory.models import Medicine, Cluster
+from orders.models import Order, OrderItem
 
 
 class MedicineSerializer(serializers.ModelSerializer):
@@ -64,3 +65,24 @@ class CreateOrderSerializer(serializers.Serializer):
         if not medicines:
             raise MedicinesRequiredException()
         return validated_data
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    medicine = serializers.SerializerMethodField()
+    class Meta:
+        model = OrderItem
+        fields = ("medicine", "quantity", "value")
+
+    def get_medicine(self, obj):
+        return obj.medicine.name
+
+class OrderListSerializer(serializers.ModelSerializer):
+    order_items = serializers.SerializerMethodField()
+    class Meta:
+        model = Order
+        fields = ("code", "contact_number", "status", "order_items")
+
+    def get_order_items(self, obj):
+        order_items = OrderItem.objects.filter(order=obj)
+        serializer = OrderItemSerializer(order_items, many=True)
+        return serializer.data

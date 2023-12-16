@@ -19,8 +19,17 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+
+class CustomAdminSite(admin.AdminSite):
+    site_title = 'Instock Console'
+    site_header = 'Instock Console'
+
+
+admin.site.__class__ = CustomAdminSite
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(('api.urls', 'api'), namespace='api')),
+    path('orders/', include(('orders.urls', 'api'), namespace='orders')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

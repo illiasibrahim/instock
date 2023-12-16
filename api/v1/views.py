@@ -14,14 +14,22 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from api.utils import main
-from api.v1.exceptions import BaseAPIException, LocationOutOfBoundException, MedicineUnavailableException, \
+from api.v1.exceptions import (
+    BaseAPIException,
+    MedicineUnavailableException,
     BucketDoesNotExistException
+)
 from api.v1.permissions import RiderOnlyPermission
-from api.v1.serializers import MedicineSerializer, CreateOrderSerializer, ValidateLocationSerializer
+from api.v1.serializers import (
+    MedicineSerializer,
+    CreateOrderSerializer,
+    ValidateLocationSerializer, OrderListSerializer
+)
 from core.utils import get_random_code
 from inventory.models import Medicine, Cluster, Stock
 from orders.constants import OrderStatusTypes
-from orders.models import Order, OrderItem, Bucket, BucketItem
+from orders.models import (
+    Order, OrderItem, Bucket, BucketItem)
 
 
 class GetToken(ObtainAuthToken):
@@ -67,7 +75,7 @@ class ValidateLocationView(APIBaseView):
             return serializer.errors
 
 
-class CreateOrderView(APIBaseView):
+class OrderView(APIBaseView):
     def post(self, request, *args, **kwargs):
         serializer = CreateOrderSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -100,6 +108,7 @@ class CreateOrderView(APIBaseView):
                         quantity__gte=quantity).order_by("price")[0]
                     value = stock.price * quantity
                     OrderItem.objects.create(
+                        order=order,
                         medicine=medicine_obj,
                         quantity=quantity,
                         store=stock.store,
@@ -114,6 +123,13 @@ class CreateOrderView(APIBaseView):
             })
         else:
             return serializer.errors
+
+    def get(self, request, *args, **kwargs):
+        queryset = Order.objects.filter(
+            created_by=request.user).order_by("-created_date")
+        serializer = OrderListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 
 class BucketView(APIBaseView):

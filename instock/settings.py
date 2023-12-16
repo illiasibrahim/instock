@@ -28,6 +28,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+ADMIN_SITE_HEADER = 'Instock Console'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -60,7 +62,7 @@ ROOT_URLCONF = 'instock.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
