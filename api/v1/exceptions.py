@@ -1,5 +1,5 @@
-from rest_framework.exceptions import APIException
 from rest_framework import status
+from rest_framework.exceptions import APIException
 
 
 class BaseAPIException(APIException):
@@ -44,7 +44,7 @@ class MedicineUnavailableException(BaseAPIException):
 
 
 class BucketDoesNotExistException(BaseAPIException):
-
+    status_code = status.HTTP_204_NO_CONTENT
     def __init__(self):
         code = 5004
         message = f"An active bucket does not exist for the rider."
