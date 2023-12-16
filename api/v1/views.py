@@ -139,7 +139,7 @@ class BucketView(APIBaseView):
         data = [
             {
                 "id": item.id,
-                "username": item.order.created_by.first_name,
+                "username": item.order.created_by.username,
                 "contact_number": item.order.contact_number,
                 "location": item.order.location,
                 "code": item.order.code,
@@ -210,6 +210,19 @@ class BucketView(APIBaseView):
         return Response(data)
 
 class MarkAsDeliveredView(APIView):
+
+    def populate_response_data(self, bucket_items):
+        data = [
+            {
+                "id": item.id,
+                "username": item.order.created_by.username,
+                "contact_number": item.order.contact_number,
+                "location": item.order.location,
+                "code": item.order.code,
+                "address": item.order.created_by.customer.address
+            } for item in bucket_items
+        ]
+        return data
     def post(self, request, *args, **kwargs):
         id = kwargs.get("id", None)
         is_final = request.GET.get("is_final", False)
@@ -221,11 +234,17 @@ class MarkAsDeliveredView(APIView):
             bucket_item.save()
             bucket_item.order.status = OrderStatusTypes.DELIVERED
             bucket_item.order.save()
+            bucket = bucket_item.bucket
             if is_final:
-                bucket = bucket_item.bucket
                 bucket.is_active = False
                 bucket.save()
-            return Response({"status": "success"})
+
+            bucket_items = BucketItem.objects.filter(
+                bucket=bucket,
+                is_delivered=False
+            ).order_by("order_number")
+            data = self.populate_response_data(bucket_items)
+            return Response(data)
         except ObjectDoesNotExist:
             raise BaseAPIException()
 
