@@ -203,7 +203,8 @@ def main(cluster, now):
         # Convert from routing variable Index to distance matrix NodeIndex.
         from_node = manager.IndexToNode(from_index)
         to_node = manager.IndexToNode(to_index)
-        return data['distance_matrix'][from_node][to_node]
+        res = data['distance_matrix'][from_node][to_node]
+        return int(res)
 
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)
 
