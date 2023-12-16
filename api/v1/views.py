@@ -118,7 +118,7 @@ class OrderView(APIBaseView):
                     raise MedicineUnavailableException(medicine=medicine_obj.__str__())
             return Response({
                 "status": "success",
-                "order_id": order.code,
+                "code": order.code,
                 "order_value": order_value
             })
         else:
