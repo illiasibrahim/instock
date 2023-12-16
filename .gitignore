@@ -1,0 +1,6 @@
+.python-version
+db.sqlite3
+.env
+*.png
+.idea
+__pycache__/
