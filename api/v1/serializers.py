@@ -36,7 +36,7 @@ class ValidateLocationSerializer(serializers.Serializer):
         location_info = geolocator.geocode(location)
         return (location_info.latitude, location_info.longitude)
 
-    def find_closest_location(self, target_location, locations, max_distance_km=2):
+    def find_closest_location(self, target_location, locations, max_distance_km=4):
         target_coordinates = self.get_coordinates(target_location)
         location_coordinates = {location: self.get_coordinates(location) for location in locations}
 

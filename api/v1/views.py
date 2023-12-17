@@ -200,6 +200,8 @@ class BucketView(APIBaseView):
         now = datetime.now()
         # solving the problem with google OR Tools
         optimized_routes = main(cluster, now)
+        if not optimized_routes[0]['path']:
+            return Response({"status": "not found"}, status=204)
         bucket = self.populate_buckets(cluster, now, optimized_routes, request.user.user_rider)
 
         bucket_items = BucketItem.objects.filter(

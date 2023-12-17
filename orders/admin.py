@@ -16,6 +16,7 @@ class OrderAdmin(BaseAdmin):
         "__str__", "code", "created_date", "created_by"
     )
     model = Order
+    list_filter = ["status"]
 
 
 class OrderItemAdmin(BaseAdmin):
